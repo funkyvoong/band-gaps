@@ -11,7 +11,8 @@ import mendeleev
 df = pd.read_csv('CODids.csv',encoding = 'unicode_escape')
 df2= pd.read_csv('bandgaps.csv',encoding = 'unicode_escape')
 df['bandgaps']=df2['bgs']
-df=df.head(1000)
+df=df.loc[3000:4000, :]
+
 
 featurelist= ['_chemical_formula_sum', "_chemical_formula_weight",  "_space_group_IT_number",
 "_symmetry_cell_setting",  "_symmetry_space_group_name_H-M",  "_cell_angle_alpha",  "_cell_angle_beta",
@@ -80,7 +81,7 @@ space_vals_encoded = onehot_encoder.fit_transform(integer_encoded)
 
 # encoding symmetry cell setting
 cell_setting = df["_symmetry_cell_setting"]
-print(set(cell_setting))
+#print(set(cell_setting))
 cell_label = LabelEncoder()
 cell_encoded = cell_label.fit_transform(cell_setting)
 cell_onehot = OneHotEncoder(sparse=False)
@@ -99,7 +100,7 @@ def corr_calc(x, y):
     print('Pearsons Correlation: ', pcorr)
     print('Spearmans Correlation: ', scorr)
 
-corr_calc(df['_chemical_formula_weight'],df['bandgaps'])
+#corr_calc(df['_chemical_formula_weight'],df['bandgaps'])
 
 #load xyz
 xyz_df = pd.read_excel('xyz.xlsx', encoding = 'unicode_escape')
@@ -119,11 +120,12 @@ for index, row in xyz_df.itertuples():
         pass
 
 # first 1000 molecules xyz
-molec = molecules[0:1000]
+molec = molecules[3000:4001]
+#print(molec[:][:][0])
 size_molecs = [len(m) for m in molec]
 max_molec = 208 #208 for omdb
 df['num_atoms']=size_molecs
-#print(df['num_atoms'])
+
 def get_coulombmat(molecule):
     import mendeleev
     """
@@ -170,4 +172,4 @@ df['eig']=df['eig'].apply(sorted, reverse=True)
 #sorted_eig = sorted(np.linalg.eigvals(padded), reverse=True)
 
 #print to read_csv
-exported= df.to_csv(r'./cifdata.csv', index= None, header=True)
+exported= df.to_csv(r'./cifdata4000.csv', index= None, header=True)
