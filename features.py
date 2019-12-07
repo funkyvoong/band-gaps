@@ -11,7 +11,7 @@ import mendeleev
 df = pd.read_csv('CODids.csv',encoding = 'unicode_escape')
 df2= pd.read_csv('bandgaps.csv',encoding = 'unicode_escape')
 df['bandgaps']=df2['bgs']
-df=df.loc[3000:4000, :]
+df=df.loc[12000:, :]
 
 
 featurelist= ['_chemical_formula_sum', "_chemical_formula_weight",  "_space_group_IT_number",
@@ -37,6 +37,7 @@ for x in featurelist:
 
 
 # get info
+print("accessing database")
 for x in df['ids']:
     id= str(x)
     index=df.loc[df['ids'] == x].index[0]
@@ -67,8 +68,10 @@ for x in df['ids']:
                         k=5.0
                     else:
                         k=7.0
+
                 df.set_value(index, y, k)
 
+print("encoding labels")
 # encoding space group
 space_vals = df["_symmetry_space_group_name_H-M"]
 label_encoder = LabelEncoder()
@@ -103,10 +106,11 @@ def corr_calc(x, y):
 #corr_calc(df['_chemical_formula_weight'],df['bandgaps'])
 
 #load xyz
-xyz_df = pd.read_excel('xyz.xlsx', encoding = 'unicode_escape')
+xyz_df = pd.read_excel('xyz2.xlsx', encoding = 'unicode_escape')
 
 molecules = []
 mi = []
+
 for index, row in xyz_df.itertuples():
     try:
         if 'Lattice' in row:
@@ -118,14 +122,15 @@ for index, row in xyz_df.itertuples():
         molecules.append(mi)
         mi = []
         pass
-
+print("computing coulombs")
 # first 1000 molecules xyz
-molec = molecules[3000:4001]
+molec = molecules[5715:]
 #print(molec[:][:][0])
 size_molecs = [len(m) for m in molec]
+
 max_molec = 208 #208 for omdb
 df['num_atoms']=size_molecs
-
+#print(len(df2['bgs']))
 def get_coulombmat(molecule):
     import mendeleev
     """
@@ -172,4 +177,4 @@ df['eig']=df['eig'].apply(sorted, reverse=True)
 #sorted_eig = sorted(np.linalg.eigvals(padded), reverse=True)
 
 #print to read_csv
-exported= df.to_csv(r'./cifdata4000.csv', index= None, header=True)
+exported= df.to_csv(r'./cifdata12500.csv', index= None, header=True)
