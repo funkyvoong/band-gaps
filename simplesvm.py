@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn import svm
+from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 
@@ -17,13 +18,41 @@ def classify_SVM(df):
 
     #test set size is 20% of dataset because that's what the authors did
     x_train, x_test, y_train, y_test= train_test_split(list(df['eig']), targets, test_size=.20, random_state=42)
-    clf= svm.SVR()
+    newgamma=1/(10000*1000)
+    clf= svm.SVR(gamma=newgamma)
     #print(len(x_train))
     #print(len(y_train))
     clf.fit(x_train,y_train)
     predictions= clf.predict(x_test)
     print(predictions)
     print(y_test)
+
+    mse = (np.square(y_test - predictions)).mean()
+    print(mse)
+    print(np.sqrt(mse))
+    mae= np.abs(y_test-predictions).mean()
+    print(mae)
+
+def linreg(df):
+    targets= df['bandgaps']
+    features= df.drop('ids', axis=1)
+    features= features.drop('bandgaps', axis=1)
+    features= features.drop('coulomb_original', axis=1)
+    features= features.drop('coulomb_padded', axis=1)
+    features= features.drop('eig', axis=1)
+    features= features.drop('_symmetry_space_group_name_H-M', axis=1)
+    features= features.drop('_chemical_formula_sum', axis=1)
+
+    #test set size is 20% of dataset because that's what the authors did
+    x_train, x_test, y_train, y_test= train_test_split(features, targets, test_size=.20, random_state=42)
+    reg = LinearRegression().fit(x_train,y_train)
+    predictions= reg.predict(x_test)
+
+    mse = (np.square(y_test - predictions)).mean()
+    print(mse)
+    print(np.sqrt(mse))
+    mae= np.abs(y_test-predictions).mean()
+    print(mae)
 
 def list_from_string(sadstring):
     sadstring=sadstring[1:-1]
@@ -69,5 +98,5 @@ for x in range(208):
     e='eig'+str(x)
     df[e]=[row[x] for row in tempeig]
 
-#print(df['eig0'])    
-classify_SVM(df)
+#print(df['eig0'])
+linreg(df)
