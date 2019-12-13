@@ -5,6 +5,7 @@ from sklearn import svm
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
+import matplotlib.pyplot as plt
 
 def classify_SVM(df):
     targets= df['bandgaps']
@@ -17,7 +18,7 @@ def classify_SVM(df):
     features= features.drop('_chemical_formula_sum', axis=1)
 
     #test set size is 20% of dataset because that's what the authors did
-    x_train, x_test, y_train, y_test= train_test_split(list(df['eig']), targets, test_size=.20, random_state=42)
+    x_train, x_test, y_train, y_test= train_test_split(features, targets, test_size=.20, random_state=42)
     newgamma=1/(10000*1000)
     clf= svm.SVR(gamma=newgamma)
     #print(len(x_train))
@@ -26,12 +27,23 @@ def classify_SVM(df):
     predictions= clf.predict(x_test)
     print(predictions)
     print(y_test)
-
+    plt.figure()
     mse = (np.square(y_test - predictions)).mean()
     print(mse)
     print(np.sqrt(mse))
     mae= np.abs(y_test-predictions).mean()
     print(mae)
+    plt.scatter(predictions, y_test, alpha=0.5)
+    plt.xlabel('Predicted')
+    plt.ylabel('True Value')
+    plt.title("Band Gap values (eV)")
+
+
+    x = np.linspace(0,6,100)
+    y = x
+    plt.plot(x, y)
+    plt.savefig('svmbandgap.png')
+
 
 def linreg(df):
     targets= df['bandgaps']
@@ -53,6 +65,19 @@ def linreg(df):
     print(np.sqrt(mse))
     mae= np.abs(y_test-predictions).mean()
     print(mae)
+    print(predictions)
+    print(list(y_test))
+
+    plt.scatter(predictions, y_test, alpha=0.5)
+    plt.xlabel('Predicted')
+    plt.ylabel('True Value')
+    plt.title("Band Gap values (eV)")
+
+
+    x = np.linspace(0,8,100)
+    y = x
+    plt.plot(x, y)
+    plt.savefig('linbandgap.png')
 
 def list_from_string(sadstring):
     sadstring=sadstring[1:-1]
